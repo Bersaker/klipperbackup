@@ -1,0 +1,37 @@
+[gcode_shell_command shutdown]
+command: sudo shutdown now
+timeout: 1
+verbose: false
+
+[gcode_macro shutdown]
+gcode:
+    RUN_SHELL_COMMAND CMD=shutdown
+
+[gcode_shell_command tasmota_off]
+command: curl "http://192.168.178.160/cm?cmnd=Backlog%3BDelay%201200%3BPower%20OFF"
+timeout: 1
+verbose: false
+
+[gcode_shell_command tasmota_on]
+command: curl "http://192.168.178.160/cm?cmnd=Backlog%3BDelay%201200%3BPower%20ON"
+verbose: false
+
+[gcode_macro tasmota_off]
+gcode:
+    RUN_SHELL_COMMAND CMD=tasmota_off
+
+[gcode_macro tasmota_on]
+gcode:
+    RUN_SHELL_COMMAND CMD=tasmota_on
+
+[delayed_gcode delayed_tasmotaoff]
+initial_duration: 0.
+gcode:
+    tasmota_off
+    shutdown
+    
+[idle_timeout]
+gcode:
+    M117 Turning Off In 5 minutes
+    UPDATE_DELAYED_GCODE ID=delayed_tasmotaoff DURATION=300
+          
